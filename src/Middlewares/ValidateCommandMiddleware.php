@@ -6,12 +6,19 @@ namespace Jomisacu\BusesFoundations\Middlewares;
 
 use InvalidArgumentException;
 use Jomisacu\BusesFoundations\CommandInterface;
+use Jomisacu\BusesFoundations\CommandValidatorInterface;
 use Jomisacu\BusesFoundations\QueryInterface;
 use League\Tactician\Middleware;
+use Psr\Container\ContainerInterface;
 use RuntimeException;
 
 final class ValidateCommandMiddleware implements Middleware
 {
+    public function __construct(
+        private readonly ContainerInterface $container,
+    ) {
+    }
+
     public function execute($command, callable $next)
     {
         $this->ensureCommandIsAnObject($command);
@@ -21,6 +28,14 @@ final class ValidateCommandMiddleware implements Middleware
         $this->ensureHandlerExists($command);
 
         $this->ensureValidatorClassExists($command);
+
+        $validator = $this->container->get($command::class . 'Validator');
+
+        if (!($validator instanceof CommandValidatorInterface)) {
+            throw new RuntimeException("Validator class must implement CommandValidatorInterface");
+        }
+
+        $validator->validate($command);
 
         return $next($command);
     }
