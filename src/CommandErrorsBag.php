@@ -17,4 +17,9 @@ final class CommandErrorsBag
     {
         return $this->errors;
     }
+
+    public function hasErrors(): bool
+    {
+        return !empty($this->errors);
+    }
 }
