@@ -6,5 +6,10 @@ namespace Jomisacu\BusesFoundations;
 
 interface CommandValidatorInterface
 {
+    /**
+     * @param CommandInterface|QueryInterface $command
+     *
+     * @throws InvalidcommandException
+     */
     public function validate($command): void;
 }
